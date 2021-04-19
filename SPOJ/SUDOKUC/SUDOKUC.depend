@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1613472695 source:d:\codeblocks\spoj\sudokuc\main.cpp
+	<iostream>
+	<fstream>
+

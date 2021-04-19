@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1608286831 source:d:\codeblocks\jpesel\main.cpp
+	<iostream>
+
+1608286831 source:d:\codeblocks\spoj\jpesel\main.cpp
+	<iostream>
+
+1608290431 source:d:\codeblocks\programy\spoj\jpesel\main.cpp
+	<iostream>
+

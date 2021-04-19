@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1616254005 source:d:\codeblocks\spoj\xiwtpza\main.cpp
+	<iostream>
+	<math.h>
+

@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1616174776 source:d:\codeblocks\spoj\mwp2_1e\main.cpp
+	<iostream>
+	<vector>
+	<algorithm>
+

@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1615901917 source:d:\codeblocks\spoj\hextobin\main.cpp
+	<iostream>
+	<map>
+

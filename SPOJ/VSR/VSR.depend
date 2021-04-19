@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1609926944 source:d:\codeblocks\spoj\predkoscsrednia\main.cpp
+	<iostream>
+
+1609927188 source:d:\codeblocks\spoj\vsr\main.cpp
+	<iostream>
+

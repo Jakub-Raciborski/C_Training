@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1610122299 source:d:\codeblocks\spoj\flamaster\main.cpp
+	<iostream>
+	<sstream>
+
+1610122299 source:d:\codeblocks\spoj\flamaste\main.cpp
+	<iostream>
+	<sstream>
+
