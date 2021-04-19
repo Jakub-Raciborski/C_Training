@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1618800400 source:d:\codeblocks\programy\address book\main.cpp
+	<iostream>
+	<vector>
+	<fstream>
+	<conio.h>
+	<cstdio>
+
+1618803945 source:d:\codeblocks\programy\c_training\address book\main.cpp
+	<iostream>
+	<vector>
+	<fstream>
+	<conio.h>
+	<cstdio>
+
