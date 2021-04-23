@@ -10,6 +10,11 @@ struct Person {
     int id = 0;
     string surname, name, email, address, phoneNumber;
 };
+struct User {
+    string userName, password;
+    int id;
+};
+
 
 void loadPersonDataFromFileToAddressBook(vector<Person> &vectorToFill);
 Person createNewPerson(int ID, string name, string surname, string phoneNumber, string email, string address);
@@ -19,7 +24,7 @@ void displayPersonData(const Person PERSON);
 void searchPersonByName(const vector<Person> &ADDRESS_BOOK);
 void searchPersonBySurname(const vector<Person> &ADDRESS_BOOK);
 void displayAllPersons(const vector<Person> &ADDRESS_BOOK);
-void askUserForDecision(vector<Person> &addressBook);
+void askUserForDecision(vector<Person> &addressBook, int &currentUserID);
 void deletePersonFromBook(vector<Person> &addressBook);
 int askUserAboutPerson(const vector<Person> &ADDRESS_BOOK);
 bool askUserIfIsSure();
@@ -30,12 +35,16 @@ void replaceAddressBookTXTFile(const vector<Person> &ADDRESS_BOOK);
 void editPersonData(vector<Person> &addressBook, const int PERSON_ID);
 void findPersonToEdit(vector<Person> &addressBook);
 void displayMenu();
+void displayLoginMenu();
+void createNewAccount();
+int checkAvailableUserID();
+void savePersonDataInUserFile(const User USER_TO_ADD);
+void addressBook();
+int logIn();
+User findAccountInFile(const string ACCOUNT_NAME);
 
 int main() {
-    vector<Person> addressBook;
-    loadPersonDataFromFileToAddressBook(addressBook);
-    displayMenu();
-    askUserForDecision(addressBook);
+    addressBook();
 }
 Person createNewPerson(int ID, string name, string surname, string phoneNumber, string email, string address) {
     Person newPerson;
@@ -164,7 +173,7 @@ void displayAllPersons(const vector<Person> &ADDRESS_BOOK) {
 void displayMenu() {
     cout<<"Write number to choose:\n1. Add new person to the address book.\n2. Search the address book by name.\n";
     cout<<"3. Search the address book by surname.\n4. Display all persons from the address book.\n5. Delete Person\n";
-    cout<<"6. Edit Person\n9. Close the program.\n";
+    cout<<"6. Edit Person\n7. Log out.\n9. Close the program.\n";
 }
 void replaceAddressBookTXTFile(const vector<Person> &ADDRESS_BOOK) {
     fstream addressBookFile;
@@ -296,9 +305,8 @@ void findPersonToEdit(vector<Person> &addressBook) {
         cout<<"Address book is empty\n";
     prepareConsoleForNextTask();
 }
-void askUserForDecision(vector<Person> &addressBook) {
-    bool programIsRunning = true;
-    while(programIsRunning) {
+void askUserForDecision(vector<Person> &addressBook, int &currentUserID) {
+    while(currentUserID>0) {
         const char USER_DECISION = getch();
         system("cls");
         displayMenu();
@@ -334,10 +342,134 @@ void askUserForDecision(vector<Person> &addressBook) {
             displayMenu();
             break;
         }
-        case '9': {
-            programIsRunning = false;
+        case '7':{
+            currentUserID = 0;
             break;
         }
+        case '9':
+            exit(currentUserID);
+        }
+    }
+}
+void displayLoginMenu() {
+    cout<<"Write number to choose:\n1. Log in\n2. Create new account\n3. Exit\n";
+}
+
+int checkAvailableUserID() {
+    int userCounter = 1;
+    string newLine;
+    fstream usersFile;
+    usersFile.open("Users.txt",ios::in);
+    if(usersFile.good()) {
+        ifstream in("Users.txt");
+        streambuf *cinbuf = cin.rdbuf();
+        cin.rdbuf(in.rdbuf());
+        while(getline(cin, newLine)) {
+            userCounter++;
+        }
+        cin.rdbuf(cinbuf);
+        in.close();
+    }
+    usersFile.close();
+    return userCounter;
+}
+void savePersonDataInUserFile(const User USER_TO_ADD) {
+    fstream userFile;
+    userFile.open("Users.txt",ios::out|ios::app);
+    userFile<<USER_TO_ADD.id<<"|"<<USER_TO_ADD.userName<<"|"<<USER_TO_ADD.password<<endl;
+    userFile.close();
+}
+void createNewAccount() {
+    string name, password;
+    cout<<"Enter name:\n";
+    getline(cin, name);
+    cout<<"Enter password\n";
+    getline(cin, password);
+    const int ID = checkAvailableUserID();
+    const User NEW_USER = {name, password, ID};
+    savePersonDataInUserFile(NEW_USER);
+}
+User findAccountInFile(const string ACCOUNT_NAME) {
+    fstream file;
+    file.open("Users.txt");
+    User foundUser = {"","",0};
+    string textLine = "";
+    do {
+        string userData[3] = {"","",""};
+        getline(file,textLine);
+        const int AMOUNT_OF_LETTERS = textLine.size();
+        int userDataCounter = 0;
+        for(int i=0; i<AMOUNT_OF_LETTERS; i++ ) {
+            if(textLine[i] != '|')
+                userData[userDataCounter] += textLine[i];
+            else
+                userDataCounter++;
+        }
+        if(userData[1] == ACCOUNT_NAME) {
+            foundUser = {userData[1], userData[2], atoi(userData[0].c_str())};
+            return foundUser;
+        }
+    } while(textLine != "");
+    return foundUser;
+}
+int logIn() {
+    const int FAIL_LOGIN_ID = 0;
+    fstream userFile;
+    userFile.open("Users.txt");
+    if(userFile.good()) {
+        string accountName, consolePassword;
+        cout<<"Enter account name:\n";
+        getline(cin, accountName);
+        User user = findAccountInFile(accountName);
+        if(user.id > 0) {
+            int loginCounter = 3;
+            while(loginCounter>0) {
+                cout<<"Enter the password:\n";
+                getline(cin, consolePassword);
+                if(consolePassword == user.password) {
+                    cout<<"Successful login\n";
+                    system("pause");
+                    return user.id;
+                } else {
+                    loginCounter--;
+                    cout<<loginCounter<<" login attempts remaining.\n";
+                }
+            }
+        } else
+            cout<<"User "<<accountName<<" does not exist.\n";
+    } else
+        cout<<"No users in the database\n";
+    userFile.close();
+    system("pause");
+    return FAIL_LOGIN_ID;
+}
+void addressBook() {
+    vector<Person> addressBook;
+    while(true) {
+        int userID = 0;
+        while(userID==0) {
+            system("cls");
+            displayLoginMenu();
+            const int USER_DECISION = getch();
+            switch(USER_DECISION) {
+            case '1': {
+                userID = logIn();
+                break;
+            }
+            case '2': {
+                createNewAccount();
+                break;
+            }
+            case '3': {
+                exit(userID);
+            }
+            }
+        }
+        system("cls");
+        while(userID>0) {
+            loadPersonDataFromFileToAddressBook(addressBook);
+            displayMenu();
+            askUserForDecision(addressBook, userID);
         }
     }
 }
