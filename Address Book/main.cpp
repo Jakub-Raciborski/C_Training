@@ -16,37 +16,42 @@ struct User {
 };
 
 
-void loadPersonDataFromFileToAddressBook(vector<Person> &vectorToFill);
+void loadPersonDataFromFileToAddressBook(vector<Person> &vectorToFill, const int USER_ID);
 Person createNewPerson(int ID, string name, string surname, string phoneNumber, string email, string address);
-void savePersonDataInAddressBookFile(Person personToAdd);
-void addNewPersonToAddressBook(vector<Person> &addressBook);
+int returnNumberOfFirstFreeLineInTXTFile(const string FILE_NAME);
+void savePersonDataInAddressBookFile(Person personToAdd, const int USER_ID);
+void addNewPersonToAddressBook(vector<Person> &addressBook, const int USER_ID, const int PERSON_ID);
 void displayPersonData(const Person PERSON);
 void searchPersonByName(const vector<Person> &ADDRESS_BOOK);
 void searchPersonBySurname(const vector<Person> &ADDRESS_BOOK);
 void displayAllPersons(const vector<Person> &ADDRESS_BOOK);
-void askUserForDecision(vector<Person> &addressBook, int &currentUserID);
+void askUserForDecision(vector<Person> &addressBook, int &currentUserID, int &highestPersonID);
 void deletePersonFromBook(vector<Person> &addressBook);
 int askUserAboutPerson(const vector<Person> &ADDRESS_BOOK);
 bool askUserIfIsSure();
 void clearConsole();
 void prepareConsoleForNextTask();
-int checkHighestIDInAddressBook(const vector<Person> &ADDRESS_BOOK);
-void replaceAddressBookTXTFile(const vector<Person> &ADDRESS_BOOK);
+int checkFirstNumberInString(string textLine);
+void replaceFile(string oldFileName, string newFileName);
+string createNewPersonDataText(const int USER_ID, Person person);
+void replacePersonInAddressBookFile(const int PERSON_TO_CHANGE_ID, string NEW_PERSON_DATA);
 void editPersonData(vector<Person> &addressBook, const int PERSON_ID);
-void findPersonToEdit(vector<Person> &addressBook);
+void findPersonToEdit(vector<Person> &addressBook, const int USER_ID);
 void displayMenu();
 void displayLoginMenu();
 void createNewAccount();
 int checkAvailableUserID();
-void savePersonDataInUserFile(const User USER_TO_ADD);
-void addressBook();
-int logIn();
+void saveDataInUserFile(const User USER_TO_ADD);
+void changePassword(const int USER_ID);
+string createUserDataWithNewPassword(string  userData);
+User logIn();
 User findAccountInFile(const string ACCOUNT_NAME);
+void addressBook();
 
 int main() {
     addressBook();
 }
-Person createNewPerson(int ID, string name, string surname, string phoneNumber, string email, string address) {
+Person createNewPerson(int ID, string surname, string name, string email, string address, string phoneNumber) {
     Person newPerson;
     newPerson.surname = surname;
     newPerson.name = name;
@@ -56,50 +61,59 @@ Person createNewPerson(int ID, string name, string surname, string phoneNumber, 
     newPerson.id = ID;
     return newPerson;
 }
-void loadPersonDataFromFileToAddressBook(vector<Person> &vectorToFill) {
-    int ID = 1;
+int returnNumberOfFirstFreeLineInTXTFile(const string FILE_NAME){
+    fstream fileToCheck;
+    fileToCheck.open(FILE_NAME);
+    string oneTextLine;
+    int lineCounter=0;
+    if(fileToCheck.good()) {
+        do {
+            getline(fileToCheck, oneTextLine);
+            lineCounter++;
+        } while(oneTextLine != "");
+        return lineCounter;
+    }
+    else
+        return 1;
+}
+void loadPersonDataFromFileToAddressBook(vector<Person> &vectorToFill, const int USER_ID) {
     string newLine;
     fstream addressBookFile;
-    addressBookFile.open("addressBook.txt",ios::in);
+    addressBookFile.open("addressBook.txt");
+    int userIDAssignedToPersonInAddressBook = 0;
     if(addressBookFile.good()) {
-        ifstream in("addressBook.txt");
-        streambuf *cinbuf = cin.rdbuf();
-        cin.rdbuf(in.rdbuf());
-        while(getline(cin, newLine)) {
-            if(newLine=="\n")
-                break;
+        while(getline(addressBookFile, newLine)){
+            bool userAndAddressIDAreEqual = false;
             const int LENGTH_OF_TEXT = newLine.size();
             int letterNumber = 0, personDataPart = 0;
-            string personData[6];
+            string personData[7];
             for(letterNumber; letterNumber<LENGTH_OF_TEXT; letterNumber++) {
+                if(personDataPart == 2 && !userAndAddressIDAreEqual) {
+                    userIDAssignedToPersonInAddressBook = atoi(personData[1].c_str());
+                    if(USER_ID == userIDAssignedToPersonInAddressBook)
+                        userAndAddressIDAreEqual = true;
+                    else
+                        break;
+                }
                 if(newLine[letterNumber]!='|')
                     personData[personDataPart] += newLine[letterNumber];
                 else
                     personDataPart++;
             }
-            vectorToFill.push_back(createNewPerson(ID++, personData[1], personData[2], personData[3], personData[4], personData[5]));
+            if(userIDAssignedToPersonInAddressBook == USER_ID)
+                vectorToFill.push_back(createNewPerson(atoi(personData[0].c_str()), personData[2], personData[3], personData[4], personData[5], personData[6]));
         }
-        cin.rdbuf(cinbuf);
-        in.close();
     }
     addressBookFile.close();
 }
-void savePersonDataInAddressBookFile(Person personToAdd) {
+void savePersonDataInAddressBookFile(Person personToAdd, const int USER_ID) {
     fstream addressBookFile;
     addressBookFile.open("addressBook.txt",ios::out|ios::app);
-    addressBookFile<<personToAdd.id<<"|"<<personToAdd.surname<<"|"<<personToAdd.name<<"|"<<
+    addressBookFile<<personToAdd.id<<"|"<<USER_ID<<"|"<<personToAdd.surname<<"|"<<personToAdd.name<<"|"<<
                    personToAdd.email<<"|"<<personToAdd.address<<"|"<<personToAdd.phoneNumber<<endl;
     addressBookFile.close();
 }
-int checkHighestIDInAddressBook(const vector<Person> &ADDRESS_BOOK) {
-    const int AMOUNT_OF_PERSONS = ADDRESS_BOOK.size();
-    if(AMOUNT_OF_PERSONS > 0) {
-        int ID = ADDRESS_BOOK[AMOUNT_OF_PERSONS-1].id;
-        return ID;
-    } else
-        return 0;
-}
-void addNewPersonToAddressBook(vector<Person> &addressBook) {
+void addNewPersonToAddressBook(vector<Person> &addressBook, const int USER_ID, const int PERSON_ID) {
     string surname, email, address, number, name;
     system("cls");
     cout<<"Enter surname:\n";
@@ -113,10 +127,9 @@ void addNewPersonToAddressBook(vector<Person> &addressBook) {
     cout<<"Enter phone number:\n";
     getline(cin, number);
     system("cls");
-    const int ID = checkHighestIDInAddressBook(addressBook) + 1;
-    Person newPerson = createNewPerson(ID, name, surname, number, email, address);
+    Person newPerson = createNewPerson(PERSON_ID, surname, name, email, address, number);
     addressBook.push_back(newPerson);
-    savePersonDataInAddressBookFile(newPerson);
+    savePersonDataInAddressBookFile(newPerson, USER_ID);
 }
 void displayPersonData(const Person PERSON) {
     cout<<PERSON.id<<". "<<PERSON.name<<" "<<PERSON.surname<<"| ";
@@ -173,20 +186,7 @@ void displayAllPersons(const vector<Person> &ADDRESS_BOOK) {
 void displayMenu() {
     cout<<"Write number to choose:\n1. Add new person to the address book.\n2. Search the address book by name.\n";
     cout<<"3. Search the address book by surname.\n4. Display all persons from the address book.\n5. Delete Person\n";
-    cout<<"6. Edit Person\n7. Log out.\n9. Close the program.\n";
-}
-void replaceAddressBookTXTFile(const vector<Person> &ADDRESS_BOOK) {
-    fstream addressBookFile;
-    addressBookFile.open("addressBook_TEMP.txt",ios::out|ios::app);
-    const int AMOUNT_OF_PERSONS = ADDRESS_BOOK.size();
-    for(int i=0; i<AMOUNT_OF_PERSONS; i++) {
-        addressBookFile<<ADDRESS_BOOK[i].id<<"|"<<ADDRESS_BOOK[i].name<<"|"<<ADDRESS_BOOK[i].surname<<"|"<<
-                       ADDRESS_BOOK[i].phoneNumber<<"|"<<ADDRESS_BOOK[i].email<<"|"<<ADDRESS_BOOK[i].address<<endl;
-    }
-    addressBookFile.close();
-    if(remove("addressBook.txt")==0)
-        rename("addressBook_TEMP.txt","addressBook.txt");
-
+    cout<<"6. Edit Person\n7. Change password.\n8. Log out.\n9. Close the program.\n";
 }
 int askUserAboutPerson(const vector<Person> &ADDRESS_BOOK) {
     while(true) {
@@ -195,7 +195,8 @@ int askUserAboutPerson(const vector<Person> &ADDRESS_BOOK) {
         string userAnswer;
         cin>>userAnswer;
         const int CHOOSED_PERSON_ID =atoi(userAnswer.c_str());
-        const int HIGHEST_ID_IN_BOOK = checkHighestIDInAddressBook(ADDRESS_BOOK);
+        const int AMOUNT_OF_PERSONS_IN_ADDRESSBOOK = ADDRESS_BOOK.size();
+        const int HIGHEST_ID_IN_BOOK = ADDRESS_BOOK[AMOUNT_OF_PERSONS_IN_ADDRESSBOOK-1].id;
         if(HIGHEST_ID_IN_BOOK == 0)
             return 0;
         if(CHOOSED_PERSON_ID>0 && CHOOSED_PERSON_ID<=HIGHEST_ID_IN_BOOK) {
@@ -215,6 +216,40 @@ bool askUserIfIsSure() {
     else
         return false;
 }
+int checkFirstNumberInString(string textLine){
+    const int LENGTH_OF_TEXT = textLine.size();
+    string firstNumber = "";
+    for(int i=0; i<LENGTH_OF_TEXT; i++){
+        if(textLine[i] != '|')
+            firstNumber += textLine[i];
+        else
+            break;
+    }
+    return atoi(firstNumber.c_str());
+}
+void replaceFile(string oldFileName, string newFileName){
+    const char *OLD_FILE_NAME = oldFileName.c_str();
+    const char *NEW_FILE_NAME = newFileName.c_str();
+    if(remove(OLD_FILE_NAME)==0)
+        rename(NEW_FILE_NAME,OLD_FILE_NAME);
+}
+void replacePersonInAddressBookFile(const int PERSON_TO_CHANGE_ID, string NEW_PERSON_DATA) {
+    fstream newAddressBookFile, oldAddressBookFile;
+    oldAddressBookFile.open("addressBook.txt",ios::in);
+    newAddressBookFile.open("addressBook_TEMP.txt",ios::out);
+    string textLine = "";
+    int currentUserID = 0;
+    while(getline(oldAddressBookFile,textLine)){
+        currentUserID = checkFirstNumberInString(textLine);
+        if(currentUserID == PERSON_TO_CHANGE_ID)
+            newAddressBookFile<<NEW_PERSON_DATA<<endl;
+        else
+            newAddressBookFile<<textLine<<endl;
+    }
+    oldAddressBookFile.close();
+    newAddressBookFile.close();
+    replaceFile("addressBook.txt","addressBook_TEMP.txt");
+}
 void deletePersonFromBook(vector<Person> &addressBook) {
     if(addressBook.size() != 0) {
         const int PERSON_ID_TO_DELETE = askUserAboutPerson(addressBook);
@@ -231,7 +266,8 @@ void deletePersonFromBook(vector<Person> &addressBook) {
                 userConfirmation = askUserIfIsSure();
                 if(userConfirmation) {
                     addressBook.erase(itr);
-                    replaceAddressBookTXTFile(addressBook);
+                    string placeholderPerson = to_string(checkingPerson.id) + "|0|Deleted Person";
+                    replacePersonInAddressBookFile(checkingPerson.id,placeholderPerson);
                     break;
                 }
             }
@@ -241,6 +277,11 @@ void deletePersonFromBook(vector<Person> &addressBook) {
     } else
         cout<<"Address book is empty\n";
     prepareConsoleForNextTask();
+}
+string createNewPersonDataText(const int USER_ID, Person person){
+    string newPersonData = to_string(person.id)+"|"+to_string(USER_ID)+"|"+person.surname+"|"+person.name+"|"+
+    person.email+"|"+person.address+"|"+person.phoneNumber;
+    return newPersonData;
 }
 void editPersonData(vector<Person> &addressBook, const int PERSON_ID) {
     bool editModeIsActive = true;
@@ -285,7 +326,7 @@ void editPersonData(vector<Person> &addressBook, const int PERSON_ID) {
         }
     }
 }
-void findPersonToEdit(vector<Person> &addressBook) {
+void findPersonToEdit(vector<Person> &addressBook, const int USER_ID) {
     const int AMOUNT_OF_PERSONS_IN_BOOK = addressBook.size();
     if(AMOUNT_OF_PERSONS_IN_BOOK!=0) {
         const int ID_OF_CHOOSED_PERSON = askUserAboutPerson(addressBook);
@@ -298,21 +339,56 @@ void findPersonToEdit(vector<Person> &addressBook) {
         }
         if(personNumber>=0) {
             editPersonData(addressBook, personNumber);
-            replaceAddressBookTXTFile(addressBook);
+            string newPersonData = createNewPersonDataText(USER_ID, addressBook[personNumber]);
+            replacePersonInAddressBookFile(ID_OF_CHOOSED_PERSON,newPersonData);
         } else
             cout<<"ID number is wrong. Person does not exist.\n";
     } else
         cout<<"Address book is empty\n";
     prepareConsoleForNextTask();
 }
-void askUserForDecision(vector<Person> &addressBook, int &currentUserID) {
+string createUserDataWithNewPassword(string  userData) {
+    const int LENGTH_OF_LINE = userData.size();
+    int verticalBarCounter = 0;
+    string newPassword = "wrong!!!", newUserData = "";
+    for(int i=0; i<LENGTH_OF_LINE; i++) {
+        if(verticalBarCounter == 2 )
+            break;
+        else if(userData[i] == '|')
+            verticalBarCounter++;
+        newUserData += userData[i];
+    }
+    cout<<"Write new password:\n";
+    getline(cin, newPassword);
+    newUserData +=newPassword;
+    return newUserData;
+}
+void changePassword(const int USER_ID) {
+    fstream oldUsersFile, newUsersFile;
+    oldUsersFile.open("Users.txt",ios::in);
+    newUsersFile.open("Users_temp.txt",ios::out);
+    int userCounter = 0;
+    string userData = "";
+    while(getline(oldUsersFile,userData)) {
+        userCounter++;
+        if(userCounter == USER_ID)
+            newUsersFile<<createUserDataWithNewPassword(userData)<<endl;
+        else
+            newUsersFile<<userData<<endl;
+    }
+    oldUsersFile.close();
+    newUsersFile.close();;
+    replaceFile("Users.txt","Users_temp.txt");
+}
+void askUserForDecision(vector<Person> &addressBook, int &currentUserID, int &highestPersonID) {
     while(currentUserID>0) {
         const char USER_DECISION = getch();
         system("cls");
         displayMenu();
         switch ( USER_DECISION ) {
         case '1': {
-            addNewPersonToAddressBook(addressBook);
+            addNewPersonToAddressBook(addressBook, currentUserID, highestPersonID);
+            highestPersonID++;
             displayMenu();
             break;
         }
@@ -338,16 +414,23 @@ void askUserForDecision(vector<Person> &addressBook, int &currentUserID) {
             break;
         }
         case '6': {
-            findPersonToEdit(addressBook);
+            findPersonToEdit(addressBook, currentUserID);
             displayMenu();
             break;
         }
         case '7':{
+            changePassword(currentUserID);
+            clearConsole();
+            displayMenu();
+            break;
+        }
+        case '8': {
             currentUserID = 0;
+            addressBook.clear();
             break;
         }
         case '9':
-            exit(currentUserID);
+            exit(0);
         }
     }
 }
@@ -373,7 +456,7 @@ int checkAvailableUserID() {
     usersFile.close();
     return userCounter;
 }
-void savePersonDataInUserFile(const User USER_TO_ADD) {
+void saveDataInUserFile(const User USER_TO_ADD) {
     fstream userFile;
     userFile.open("Users.txt",ios::out|ios::app);
     userFile<<USER_TO_ADD.id<<"|"<<USER_TO_ADD.userName<<"|"<<USER_TO_ADD.password<<endl;
@@ -387,7 +470,7 @@ void createNewAccount() {
     getline(cin, password);
     const int ID = checkAvailableUserID();
     const User NEW_USER = {name, password, ID};
-    savePersonDataInUserFile(NEW_USER);
+    saveDataInUserFile(NEW_USER);
 }
 User findAccountInFile(const string ACCOUNT_NAME) {
     fstream file;
@@ -412,8 +495,8 @@ User findAccountInFile(const string ACCOUNT_NAME) {
     } while(textLine != "");
     return foundUser;
 }
-int logIn() {
-    const int FAIL_LOGIN_ID = 0;
+User logIn() {
+    const User EMPTY_USER = {"","",0};
     fstream userFile;
     userFile.open("Users.txt");
     if(userFile.good()) {
@@ -429,7 +512,7 @@ int logIn() {
                 if(consolePassword == user.password) {
                     cout<<"Successful login\n";
                     system("pause");
-                    return user.id;
+                    return user;
                 } else {
                     loginCounter--;
                     cout<<loginCounter<<" login attempts remaining.\n";
@@ -441,19 +524,20 @@ int logIn() {
         cout<<"No users in the database\n";
     userFile.close();
     system("pause");
-    return FAIL_LOGIN_ID;
+    return EMPTY_USER;
 }
 void addressBook() {
     vector<Person> addressBook;
+    int highestFreePersonID = returnNumberOfFirstFreeLineInTXTFile("addressBook.txt");
     while(true) {
-        int userID = 0;
-        while(userID==0) {
+        User loggedUser = {"","",0};
+        while(loggedUser.id == 0) {
             system("cls");
             displayLoginMenu();
             const int USER_DECISION = getch();
             switch(USER_DECISION) {
             case '1': {
-                userID = logIn();
+                loggedUser = logIn();
                 break;
             }
             case '2': {
@@ -461,15 +545,15 @@ void addressBook() {
                 break;
             }
             case '3': {
-                exit(userID);
+                exit(0);
             }
             }
         }
         system("cls");
-        while(userID>0) {
-            loadPersonDataFromFileToAddressBook(addressBook);
+        while(loggedUser.id > 0) {
+            loadPersonDataFromFileToAddressBook(addressBook, loggedUser.id);
             displayMenu();
-            askUserForDecision(addressBook, userID);
+            askUserForDecision(addressBook, loggedUser.id, highestFreePersonID);
         }
     }
 }
