@@ -1,0 +1,8 @@
+bin/
+obj/
+Plan/
+*.cbp
+*.layout
+*.depend
+*.swp
+ksiazka-strukturalnie.cpp
