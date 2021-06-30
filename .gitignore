@@ -5,4 +5,6 @@ Plan/
 *.layout
 *.depend
 *.swp
+*.mm
+*.ux
 ksiazka-strukturalnie.cpp
