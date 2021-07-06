@@ -5,3 +5,7 @@ string InputStream::loadLine(){
     getline(cin, input);
     return input;
 }
+char InputStream::loadOneCharacter(){
+    char character  = getch();
+    return character;
+}

@@ -1,12 +1,12 @@
 #ifndef HOMEBUDGET_H
 #define HOMEBUDGET_H
 
-#include "User.h"
+#include "UserManager.h"
 
 using namespace std;
 
 class HomeBudget{
-
+    UserManager userManager;
 public:
     HomeBudget(){};
     void displayMainMenu();
