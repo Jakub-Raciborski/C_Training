@@ -28,12 +28,10 @@ void UserManager::displayMainMenu() {
 void UserManager::registerNewUser(){
     User newUser = loadUserDataFromInput();
     users.push_back(newUser);
-    saveNewUserInXMLFile(newUser);
+    XMLUser.saveUserData(newUser);
 }
 User UserManager::loadUserDataFromInput(){
     User newUser;
     newUser.setAllAttributes();
     return newUser;
-}
-void UserManager::saveNewUserInXMLFile(User newUser){
 }
