@@ -1,12 +1,16 @@
 #include "UserManager.h"
 
+User UserManager::getActiveUser(){
+    return activeUser;
+}
+
 void UserManager::processingDecisionFromMainMenu() {
-    while(activeUser == NULL) {
+    while(userIsLogIn==false) {
         displayMainMenu();
         char userDecision = InputStream::loadOneCharacter();
         switch (userDecision) {
         case '1':
-            //LogIn();
+            logIn();
             break;
         case '2':
             registerNewUser();
@@ -34,4 +38,13 @@ User UserManager::loadUserDataFromInput(){
     User newUser;
     newUser.setAllAttributes();
     return newUser;
+}
+void UserManager::logIn(){
+    User loggedUser = XMLUser.logIn();
+    if(activeUser.getLogin() == loggedUser.getLogin())
+        userIsLogIn = false;
+    else{
+        activeUser = loggedUser;
+        userIsLogIn = true;
+    }
 }

@@ -6,10 +6,12 @@
 #include "Markup.h"
 #include "StringMethods.h"
 #include "User.h"
+#include "InputStream.h"
 
 using namespace std;
 
-class XMLFileManager{
+class XMLFileManager {
+protected:
     CMarkup XMLFile;
     const char* FILE_PATH;
 
@@ -17,17 +19,10 @@ class XMLFileManager{
     bool createNewFolder(const char* FOLDER_PATH);
     void addNewFolderIfIsMissing(const string FOLDER_PATH);
     void createAllNecessaryFolders();
-    bool checkUserAlreadyExist(string login);
 
 public:
     XMLFileManager(const char* PATH)
-    :FILE_PATH(PATH){
-        createAllNecessaryFolders();
-        XMLFile.Load(FILE_PATH);
-    };
-
-    void saveUserData(User newUser);
-
+        :FILE_PATH(PATH) {};
 
 };
 #endif // XMLFILEMANAGER_H

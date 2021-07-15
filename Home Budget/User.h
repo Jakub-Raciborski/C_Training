@@ -12,6 +12,8 @@ class User{
     string password;
 public:
     User(){};
+    User(string name, string surname, string login, string password)
+    :name(name),surname(surname),login(login), password(password){};
     void setName();
     void setSurname();
     void setLogin();

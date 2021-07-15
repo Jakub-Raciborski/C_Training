@@ -3,21 +3,25 @@
 
 #include <vector>
 #include "InputStream.h"
-#include "XMLFileManager.h"
+#include "XMLFileManagerUsers.h"
 
 using namespace std;
 
 class UserManager{
     vector<User> users;
-    User *activeUser;
-    XMLFileManager XMLUser;
+    User activeUser;
+    bool userIsLogIn;
+    XMLFileManagerUsers XMLUser;
 
     void displayMainMenu();
     void registerNewUser();
     User loadUserDataFromInput();
+    void logIn();
 public:
     UserManager()
-    : activeUser(NULL), XMLUser("C:\\HomeBudget\\Plik.XML"){};
+    : XMLUser("C:\\HomeBudget\\Users.XML"),userIsLogIn(false){};
+    User getActiveUser();
+
     void processingDecisionFromMainMenu();
 
 

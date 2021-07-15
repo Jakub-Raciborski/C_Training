@@ -38,39 +38,3 @@ void XMLFileManager::createAllNecessaryFolders() {
             checkingPath += FILE_PATH[i];
     }
 }
-bool XMLFileManager::checkUserAlreadyExist(string login) {
-    XMLFile.ResetPos();
-    while(true) {
-        if(XMLFile.FindElem()) {
-            XMLFile.IntoElem();
-            XMLFile.FindElem("Login");
-            if(login == XMLFile.GetData())
-                return true;
-            else {
-                XMLFile.OutOfElem();
-                continue;
-            }
-        } else
-            return false;
-    }
-}
-void XMLFileManager::saveUserData(User newUser) {
-    string newUserLogin = newUser.getLogin();
-    if(checkUserAlreadyExist(newUserLogin)) {
-        cout<<"User "<<newUserLogin<<" already exist\n";
-        system("pause");
-    } else {
-        XMLFile.ResetPos();
-        XMLFile.AddElem(newUserLogin);
-        XMLFile.IntoElem();
-        XMLFile.AddElem("Name", newUser.getName());
-        XMLFile.AddElem("Surname", newUser.getSurname());
-        XMLFile.AddElem("Login", newUserLogin);
-        XMLFile.AddElem("Password", newUser.getPassword());
-        if(XMLFile.Save(FILE_PATH))
-            cout<<"User account created succesfully.\n";
-        else
-            cout<<"Something went wrong. Try again.\n";
-        system("pause");
-    }
-}
