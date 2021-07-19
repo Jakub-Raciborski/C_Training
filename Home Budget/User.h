@@ -10,10 +10,11 @@ class User{
     string surname;
     string login;
     string password;
+    bool active;
 public:
-    User(){};
+    User():active(false){};
     User(string name, string surname, string login, string password)
-    :name(name),surname(surname),login(login), password(password){};
+    :name(name),surname(surname),login(login), password(password), active(true){};
     void setName();
     void setSurname();
     void setLogin();
@@ -24,6 +25,8 @@ public:
     string getPassword();
 
     void setAllAttributes();
+    bool isActive();
+    void deactivate();
 };
 
 #endif // USER_H

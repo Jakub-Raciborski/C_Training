@@ -10,7 +10,6 @@ using namespace std;
 class UserManager{
     vector<User> users;
     User activeUser;
-    bool userIsLogIn;
     XMLFileManagerUsers XMLUser;
 
     void displayMainMenu();
@@ -19,10 +18,11 @@ class UserManager{
     void logIn();
 public:
     UserManager()
-    : XMLUser("C:\\HomeBudget\\Users.XML"),userIsLogIn(false){};
+    : XMLUser("C:\\HomeBudget\\Users.XML"){};
     User getActiveUser();
 
     void processingDecisionFromMainMenu();
+    void logOut();
 
 
 };

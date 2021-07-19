@@ -41,9 +41,15 @@ string User::getLogin() {
 string User::getPassword() {
     return password;
 }
+bool User::isActive(){
+    return active;
+}
 void User::setAllAttributes(){
     setName();
     setSurname();
     setLogin();
     setPassword();
+}
+void User::deactivate(){
+    active = false;
 }

@@ -7,9 +7,8 @@ using namespace std;
 
 int main()
 {
-    HomeBudget *homeBudget = new HomeBudget();
-    homeBudget->displayMainMenu();
+    HomeBudget homeBudget;
+    homeBudget.startProgram();
     Date currentDate;
     cout<<currentDate.getDateSignature();
-    delete homeBudget;
 }

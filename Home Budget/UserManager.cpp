@@ -5,23 +5,24 @@ User UserManager::getActiveUser(){
 }
 
 void UserManager::processingDecisionFromMainMenu() {
-    while(userIsLogIn==false) {
+    while(!activeUser.isActive()) {
         displayMainMenu();
         char userDecision = InputStream::loadOneCharacter();
         switch (userDecision) {
-        case '1':
+        case '1':{
             logIn();
             break;
-        case '2':
+        }
+        case '2':{
             registerNewUser();
             break;
+        }
         case '9':
             exit(0);
-            break;
-        default:
+        default:{
             cout << endl << "Wrong character. Try again." << endl << endl;
             system("pause");
-            break;
+        }
         }
     }
 }
@@ -40,11 +41,8 @@ User UserManager::loadUserDataFromInput(){
     return newUser;
 }
 void UserManager::logIn(){
-    User loggedUser = XMLUser.logIn();
-    if(activeUser.getLogin() == loggedUser.getLogin())
-        userIsLogIn = false;
-    else{
-        activeUser = loggedUser;
-        userIsLogIn = true;
-    }
+    activeUser = XMLUser.logIn();
+}
+void UserManager::logOut(){
+    activeUser.deactivate();
 }
