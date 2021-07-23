@@ -6,23 +6,27 @@
 using namespace std;
 
 class CashFlow{
-    string comment;
+    string description;
     Date date;
     float amount;
-    bool isExpense;
 
 public:
     CashFlow(){};
-    void setComment(string comment);
+    CashFlow(float amount, Date date, string description){
+        this->amount = amount;
+        this->date = date;
+        this->description = description;
+    }
+    void setDescription(string description);
     void setDate(Date date);
     void setAmount(float amount);
-    void setIsExpense(bool isExpense);
-    string getComment();
+    string getDescriptiont();
     Date getDate();
-    float getAmount;
-    bool checkIsExpense();
+    float getAmount();
 
-
+    int getDateSignature();
+    int getYear();
+    int getMonth();
 };
 
 #endif // CASHFLOW_H

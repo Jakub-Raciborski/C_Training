@@ -6,13 +6,18 @@ void HomeBudget::displayMainMenu() {
 void HomeBudget::startProgram() {
     while(true) {
         displayMainMenu();
-        loggedUser = userManager.getActiveUser();
+        loadDataFromLoggedUser();
         while(loggedUser.isActive()) {
             system("cls");
             displayUserMenu();
             processingDecisionFromUserMenu();
         }
     }
+}
+void HomeBudget::loadDataFromLoggedUser(){
+    loggedUser = userManager.getActiveUser();
+    Revenue.logInUser(loggedUser);
+    Expense.logInUser(loggedUser);
 }
 void HomeBudget::displayUserMenu() {
     cout<<"1. Add Revenue.\n2. Add Expense.\n3. Show Last Month's Balance Sheet.\n4. Show Current Month's Balance Sheet.\n";
@@ -21,10 +26,20 @@ void HomeBudget::displayUserMenu() {
 void HomeBudget::logOut() {
     userManager.logOut();
     loggedUser.deactivate();
+    Revenue.logOutUser();
+    Expense.logOutUser();
 }
 void HomeBudget::processingDecisionFromUserMenu() {
     const char USER_DECISION = InputStream::loadOneCharacter();
     switch(USER_DECISION) {
+    case '1':{
+        Revenue.addCashFlow();
+        break;
+    }
+    case '2':{
+        Expense.addCashFlow();
+        break;
+    }
     case '7': {
         logOut();
         break;

@@ -41,7 +41,8 @@ User UserManager::loadUserDataFromInput(){
     return newUser;
 }
 void UserManager::logIn(){
-    activeUser = XMLUser.logIn();
+    if(XMLUser.logIn())
+        activeUser = XMLUser.getActiveUser();
 }
 void UserManager::logOut(){
     activeUser.deactivate();

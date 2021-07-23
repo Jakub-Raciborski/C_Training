@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <ctime>
+#include "VariableModification.h"
+#include "InputStream.h"
 
 using namespace std;
 
@@ -15,19 +17,25 @@ class Date
 
     void createSignature();
     void convertStringToDate();
-    void setDateToToday();
     string convertMonthIntToTwoCharString();
     string convertDayIntToTwoCharString();
+    int askAboutYear();
+    int askAboutMonth();
+    int askAboutDay();
+    bool isMonthCorrect(string month);
+    bool isDayCorrect(string day);
+    bool isMonthWith31days();
+    bool isMonthWith30days();
+    bool isLeapYear();
+    bool isFebruary();
 public:
-    Date()
-    {
-        setDateToToday();
-        createSignature();
-    };
-    Date(string userInput) {};
+    Date():year(0), month(0), day(0){}
     int getDateSignature();
-
+    int getMonth();
+    int getYear();
+    void setDateToToday();
     bool checkIfDateIsLater();
+    void setDateNotToToday();
 };
 
 #endif // DATE_H

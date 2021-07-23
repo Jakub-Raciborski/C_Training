@@ -8,6 +8,7 @@ using namespace std;
 class  XMLFileManagerUsers :public XMLFileManager {
     bool checkUserAlreadyExist(string login);
     bool checkUserPassword(string password);
+    User activeUser;
 
 public:
     XMLFileManagerUsers(const char* PATH)
@@ -15,9 +16,10 @@ public:
         createAllNecessaryFolders();
         XMLFile.Load(FILE_PATH);
     };
+    User getActiveUser();
 
     void saveUserData(User newUser);
-    User logIn();
+    bool logIn();
 
 };
 #endif // XMLFILEMANAGERUSERS_H
