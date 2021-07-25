@@ -49,26 +49,11 @@ string XMLFileManagerCashFlow::askUserAboutDescriptionOfCashFlow() {
     userDescription = InputStream::loadLine();
     return userDescription;
 }
-/*void XMLFileManagerCashFlow::enterTheYearInFile(string year) {
-    if(XMLFile.FindElem(year))
-        XMLFile.IntoElem();
-    else {
-        XMLFile.AddElem(year);
-        XMLFile.IntoElem();
-    }
-}
-void XMLFileManagerCashFlow::enterTheMonthInFile(string month) {
-    if(XMLFile.FindElem(month))
-        XMLFile.IntoElem();
-    else {
-        XMLFile.AddElem(month);
-        XMLFile.IntoElem();
-    }
-}*/
 void XMLFileManagerCashFlow::saveCashFlowInFile(CashFlow cashFlow) {
     string signature = VariableModification::convertIntToString(cashFlow.getDateSignature());
+    string entryName = "Entry" + signature;
     string amount = VariableModification::convertFloatToString(cashFlow.getAmount());
-XMLFile.AddElem(signature);
+    XMLFile.AddElem(entryName);
     XMLFile.IntoElem();
     XMLFile.AddElem("Amount",amount);
     XMLFile.AddElem("Date", signature);
@@ -86,4 +71,29 @@ void XMLFileManagerCashFlow::addCashFlow() {
 void XMLFileManagerCashFlow::logOutUser() {
     XMLFile.ResetPos();
     loggedUser = "";
+}
+float XMLFileManagerCashFlow::loadAmountFromCurrentlySelectedXMLFileEntry() {
+    XMLFile.IntoElem();
+    XMLFile.FindElem("Amount");
+    float amount = VariableModification::convertStringToFloat(XMLFile.GetData());
+    XMLFile.OutOfElem();
+    return amount;
+}
+float XMLFileManagerCashFlow::countSumOfCashFlowsOfSelectedPeriod(const int FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE, const int LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE) {
+    int checkingSignature = FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE;
+    Date checkingDate(FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE);
+    float sumOfCashFlow = 0;
+    XMLFile.ResetMainPos();
+
+    while(checkingSignature <= LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE) {
+        string entryName = "Entry" + VariableModification::convertIntToString(checkingSignature);
+        if(XMLFile.FindElem(entryName))
+            sumOfCashFlow += loadAmountFromCurrentlySelectedXMLFileEntry();
+        else {
+            checkingDate.moveDateToNextDay();
+            checkingSignature = checkingDate.getDateSignature();
+            XMLFile.ResetMainPos();
+        }
+    }
+    return sumOfCashFlow;
 }

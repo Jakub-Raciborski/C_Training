@@ -24,18 +24,29 @@ class Date
     int askAboutDay();
     bool isMonthCorrect(string month);
     bool isDayCorrect(string day);
+    bool isDayCorrect(const int DAY_TO_CHECK);
     bool isMonthWith31days();
     bool isMonthWith30days();
     bool isLeapYear();
     bool isFebruary();
+    int getLastDayOfCurrentMonth();
+    void setDateAccordingToSignature();
+
 public:
     Date():year(0), month(0), day(0){}
+    Date(int signature)
+    :dateSignature(signature){
+        setDateAccordingToSignature();
+    }
     int getDateSignature();
     int getMonth();
     int getYear();
     void setDateToToday();
     bool checkIfDateIsLater();
     void setDateNotToToday();
+    void setDateToTheFirstDayOfPreviousMonth();
+    void setDateToTheLastDayOfPreviousMonth();
+    void moveDateToNextDay();
 };
 
 #endif // DATE_H

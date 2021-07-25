@@ -107,7 +107,23 @@ bool Date::isLeapYear() {
 }
 bool Date::isDayCorrect(string day) {
     const int DAY_TO_CHECK = VariableModification::convertStringToInt(day);
-    if(DAY_TO_CHECK < 0 )
+    if(DAY_TO_CHECK < 1 || DAY_TO_CHECK > 31)
+        return false;
+    else {
+        if(isMonthWith30days() && DAY_TO_CHECK <= 30)
+            return true;
+        else if(isMonthWith31days() && DAY_TO_CHECK <=31)
+            return true;
+        else if(isFebruary() && isLeapYear() && DAY_TO_CHECK <= 29)
+            return true;
+        else if(isFebruary() && !isLeapYear() && DAY_TO_CHECK <= 28)
+            return true;
+        else
+            return false;
+    }
+}
+bool Date::isDayCorrect(const int DAY_TO_CHECK) {
+    if(DAY_TO_CHECK < 1 || DAY_TO_CHECK > 31)
         return false;
     else {
         if(isMonthWith30days() && DAY_TO_CHECK <= 30)
@@ -141,4 +157,58 @@ void Date::setDateNotToToday() {
     this->year = askAboutYear();
     this->month = askAboutMonth();
     this->day = askAboutDay();
+}
+int Date::getLastDayOfCurrentMonth() {
+    if(month == 0)
+        return 0;
+    for(int day = 31; day >= 28; day--) {
+        if(isDayCorrect(day))
+            return day;
+    }
+    return 0;
+}
+void Date::setDateToTheFirstDayOfPreviousMonth() {
+    setDateToToday();
+    if(month > 1) {
+        month--;
+        day = 1;
+    } else {
+        year--;
+        month = 12;
+        day = 1;
+    }
+}
+void Date::setDateToTheLastDayOfPreviousMonth() {
+    setDateToToday();
+    if(month > 1)
+        month--;
+    else {
+        year--;
+        month = 12;
+    }
+    day = getLastDayOfCurrentMonth();
+}
+void Date::setDateAccordingToSignature() {
+    int year = dateSignature / 10000;
+    int month = (dateSignature - year*10000) / 100;
+    int day = dateSignature % 100;
+
+    this->year = year;
+    this->month = month;
+    this->day = day;
+}
+void Date::moveDateToNextDay() {
+    int nextDay = day + 1;
+    if(isDayCorrect(nextDay))
+        day = nextDay;
+    else {
+        if(month==12) {
+            year++;
+            month = 1;
+            day = 1;
+        } else {
+            month++;
+            day = 1;
+        }
+    }
 }
