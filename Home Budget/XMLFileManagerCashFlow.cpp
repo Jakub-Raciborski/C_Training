@@ -17,9 +17,12 @@ float XMLFileManagerCashFlow::askUserAboutAmount() {
         system("cls");
         cout<<"Enter the amount: \n";
         string user_input = InputStream::loadLine();
-        user_input = StringMethods::changeCommaToDot(user_input);
-        amount = VariableModification::convertStringToFloat(user_input);
-        if(amount == 0) {
+        int lengthOfUserInput = user_input.length();
+        if(lengthOfUserInput != 0) {
+            user_input = StringMethods::changeCommaToDot(user_input);
+            amount = VariableModification::convertStringToFloat(user_input);
+        }
+        if(amount == 0 || lengthOfUserInput == 0) {
             cout<<"You did not enter a number or number is equal to 0. Try again.\n";
             system("pause");
         }
@@ -38,7 +41,7 @@ Date XMLFileManagerCashFlow::askUserAboutDate() {
         date.setDateToToday();
         return date;
     } else {
-        date.setDateNotToToday();
+        date.setDateByUserDecision();
         return date;
     }
 }

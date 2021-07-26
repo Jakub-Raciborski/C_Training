@@ -41,12 +41,14 @@ public:
     int getDateSignature();
     int getMonth();
     int getYear();
-    void setDateToToday();
+    void setDateByUserDecision();
     bool checkIfDateIsLater();
-    void setDateNotToToday();
+    void setDateToToday();
     void setDateToTheFirstDayOfPreviousMonth();
     void setDateToTheLastDayOfPreviousMonth();
     void moveDateToNextDay();
+    void setDateToTheFirstDayOfCurrentMonth();
+    void setDateToTheLastDayOfCurrentMonth();
 };
 
 #endif // DATE_H

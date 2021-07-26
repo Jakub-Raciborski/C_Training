@@ -18,9 +18,12 @@ class HomeBudget{
     void processingDecisionFromUserMenu();
     void logOut();
     void loadDataFromLoggedUser();
-    int getDateSignatureFromFirstDateOfPreviousMonth();
-    int getDateSignatureFromLastDateOfPreviousMonth();
+    int getDateSignatureFromFirstDayOfPreviousMonth();
+    int getDateSignatureFromLastDayOfPreviousMonth();
+    int getDateSignatureFromLastDayOfCurrentMonth();
+    int getDateSignatureFromFirstDayOfCurrentMonth();
     void displayFinancialBalanceSheetFromLastMonth();
+    void displayFinancialBalanceSheetFromCurrentMonth();
     float countFinancialBalanceSheetOfSelectedPeriod(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE);
 
 public:

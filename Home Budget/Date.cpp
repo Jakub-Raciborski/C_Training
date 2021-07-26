@@ -153,7 +153,7 @@ int Date::askAboutDay() {
         }
     }
 }
-void Date::setDateNotToToday() {
+void Date::setDateByUserDecision() {
     this->year = askAboutYear();
     this->month = askAboutMonth();
     this->day = askAboutDay();
@@ -211,4 +211,12 @@ void Date::moveDateToNextDay() {
             day = 1;
         }
     }
+}
+void Date::setDateToTheFirstDayOfCurrentMonth(){
+    setDateToToday();
+    this->day = 1;
+}
+void Date::setDateToTheLastDayOfCurrentMonth(){
+    setDateToToday();
+    this->day = getLastDayOfCurrentMonth();
 }
