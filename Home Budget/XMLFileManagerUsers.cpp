@@ -85,3 +85,11 @@ bool XMLFileManagerUsers::logIn() {
         return false;
     }
 }
+void XMLFileManagerUsers::overwritePassword(string newPassword){
+    XMLFile.ResetPos();
+    XMLFile.FindElem(activeUser.getLogin());
+    XMLFile.IntoElem();
+    XMLFile.FindElem("Password");
+    XMLFile.SetData(newPassword);
+    XMLFile.Save(FILE_PATH);
+}

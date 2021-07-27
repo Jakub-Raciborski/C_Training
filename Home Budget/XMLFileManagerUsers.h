@@ -20,6 +20,7 @@ public:
 
     void saveUserData(User newUser);
     bool logIn();
+    void overwritePassword(string newPassword);
 
 };
 #endif // XMLFILEMANAGERUSERS_H

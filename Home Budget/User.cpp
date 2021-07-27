@@ -29,6 +29,9 @@ void User::setPassword() {
         }
     }
 }
+void User::setPassword(string newPasword){
+    this->password = newPasword;
+}
 string User::getName() {
     return name;
 }

@@ -1,14 +1,12 @@
 #ifndef USERMANAGER_H
 #define USERMANAGER_H
 
-#include <vector>
 #include "InputStream.h"
 #include "XMLFileManagerUsers.h"
 
 using namespace std;
 
 class UserManager{
-    vector<User> users;
     User activeUser;
     XMLFileManagerUsers XMLUser;
 
@@ -23,6 +21,7 @@ public:
 
     void processingDecisionFromMainMenu();
     void logOut();
+    void changePassword();
 
 
 };
