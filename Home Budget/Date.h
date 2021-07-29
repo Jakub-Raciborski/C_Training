@@ -47,8 +47,10 @@ public:
     void setDateToTheFirstDayOfPreviousMonth();
     void setDateToTheLastDayOfPreviousMonth();
     void moveDateToNextDay();
+    void moveDateToPreviousDay();
     void setDateToTheFirstDayOfCurrentMonth();
     void setDateToTheLastDayOfCurrentMonth();
+    string getDateNotation();
 };
 
 #endif // DATE_H

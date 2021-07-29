@@ -212,6 +212,20 @@ void Date::moveDateToNextDay() {
         }
     }
 }
+void Date::moveDateToPreviousDay(){
+    int previousDay = day - 1;
+    if(previousDay < 1 && month > 1){
+        month--;
+        day = getLastDayOfCurrentMonth();
+    }
+    else if(previousDay < 1 && month == 1){
+        year--;
+        month = 12;
+        day = 1;
+    }
+    else
+        day--;
+}
 void Date::setDateToTheFirstDayOfCurrentMonth(){
     setDateToToday();
     this->day = 1;
@@ -219,4 +233,10 @@ void Date::setDateToTheFirstDayOfCurrentMonth(){
 void Date::setDateToTheLastDayOfCurrentMonth(){
     setDateToToday();
     this->day = getLastDayOfCurrentMonth();
+}
+string Date::getDateNotation(){
+    const string DATE_NOTATION = VariableModification::convertIntToString(day) + "." + VariableModification::convertIntToString(month)
+                                + "." + VariableModification::convertIntToString(year);
+
+    return DATE_NOTATION;
 }

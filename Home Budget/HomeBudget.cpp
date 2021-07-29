@@ -16,28 +16,28 @@ void HomeBudget::startProgram() {
 }
 void HomeBudget::loadDataFromLoggedUser() {
     loggedUser = userManager.getActiveUser();
-    Revenue.logInUser(loggedUser);
-    Expense.logInUser(loggedUser);
+    revenue.logInUser(loggedUser);
+    expense.logInUser(loggedUser);
 }
 void HomeBudget::displayUserMenu() {
-    cout<<"1. Add Revenue.\n2. Add Expense.\n3. Show Current Month's Balance Sheet.\n4. Show Last Month's Balance Sheet.\n";
+    cout<<"1. Add revenue.\n2. Add expense.\n3. Show Current Month's Balance Sheet.\n4. Show Last Month's Balance Sheet.\n";
     cout<<"5. Choose period for Balance Sheet.\n6. Change Password.\n7. Log Out.\n9. Close Program.\n";
 }
 void HomeBudget::logOut() {
     userManager.logOut();
     loggedUser.deactivate();
-    Revenue.logOutUser();
-    Expense.logOutUser();
+    revenue.logOutUser();
+    expense.logOutUser();
 }
 void HomeBudget::processingDecisionFromUserMenu() {
     const char USER_DECISION = InputStream::loadOneCharacter();
     switch(USER_DECISION) {
     case '1': {
-        Revenue.addCashFlow();
+        revenue.addCashFlow();
         break;
     }
     case '2': {
-        Expense.addCashFlow();
+        expense.addCashFlow();
         break;
     }
     case '3': {
@@ -92,33 +92,40 @@ int HomeBudget::getDateSignatureOfSelectedDay() {
     date.setDateByUserDecision();
     return date.getDateSignature();
 }
-float HomeBudget::countFinancialBalanceSheetOfSelectedPeriod(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE) {
-    float sumOfRevenues=0, sumOfExpenses=0, finalAmount=0;
-    sumOfRevenues = Revenue.countSumOfCashFlowsOfSelectedPeriod(FIRST_DAY_SIGNATURE, LAST_DAY_SIGNATURE);
-    sumOfExpenses = Expense.countSumOfCashFlowsOfSelectedPeriod(FIRST_DAY_SIGNATURE, LAST_DAY_SIGNATURE);
-    finalAmount = sumOfRevenues - sumOfExpenses;
-    return finalAmount;
+float HomeBudget::countSumOfExpenses(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE){
+    return expense.countSumOfCashFlowsOfSelectedPeriod(FIRST_DAY_SIGNATURE, LAST_DAY_SIGNATURE);
 }
-void HomeBudget::displayFinancialBalanceSheetFromLastMonth() {
-    int firstDayOfPreviousMonthSignature = getDateSignatureOfFirstDayOfPreviousMonth();
-    int lastDayOfPreviousMonthSignature = getDateSignatureOfLastDayOfPreviousMonth();
-    const float BALANCE_SHEET_AMOUNT = countFinancialBalanceSheetOfSelectedPeriod(firstDayOfPreviousMonthSignature, lastDayOfPreviousMonthSignature);
-
-    system("cls");
-    cout<<"Your money balance sheet for the previous month is "<<BALANCE_SHEET_AMOUNT<<endl;
-    system("pause");
+float HomeBudget::countSumOfRevenues(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE){
+    return revenue.countSumOfCashFlowsOfSelectedPeriod(FIRST_DAY_SIGNATURE, LAST_DAY_SIGNATURE);
 }
-void HomeBudget::displayFinancialBalanceSheetFromCurrentMonth() {
-    int firstDayOfCurrentMonthSignature = getDateSignatureOfFirstDayOfCurrentMonth();
-    int lastDayOfCurrentMonthSignature = getDateSignatureOfLastDayOfCurrentMonth();
-    const float BALANCE_SHEET_AMOUNT = countFinancialBalanceSheetOfSelectedPeriod(firstDayOfCurrentMonthSignature, lastDayOfCurrentMonthSignature);
-
+void HomeBudget::displayListOfRevenues(const int FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE, const int LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE){
+    cout<<"Revenues list:\n";
+    revenue.displayAllCashFlowsDetailsFromSelectedPeriod(FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE,LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE);
+    cout<<endl;
+}
+void HomeBudget::displayListOfExpenses(const int FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE, const int LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE){
+    cout<<"Expenses list:\n";
+    expense.displayAllCashFlowsDetailsFromSelectedPeriod(FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE,LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE);
+    cout<<endl;
+}
+void HomeBudget::displayAllDetailsForFinancialBalanceSheetFromSelectedPeriodOfTime(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE){
     system("cls");
-    cout<<"Your money balance sheet for the current month is "<<BALANCE_SHEET_AMOUNT<<endl;
+
+    displayListOfRevenues(FIRST_DAY_SIGNATURE,LAST_DAY_SIGNATURE);
+    const float SUM_OF_REVENUES = countSumOfRevenues(FIRST_DAY_SIGNATURE,LAST_DAY_SIGNATURE);
+    cout<<"Sum of revenues is "<<VariableModification::convertFloatToString(SUM_OF_REVENUES)<<endl<<endl;
+
+    displayListOfExpenses(FIRST_DAY_SIGNATURE,LAST_DAY_SIGNATURE);
+    const float SUM_OF_EXPENSES = countSumOfExpenses(FIRST_DAY_SIGNATURE,LAST_DAY_SIGNATURE);
+    cout<<"Sum of expenses is "<<VariableModification::convertFloatToString(SUM_OF_EXPENSES)<<endl<<endl;
+
+    float finaleBalance = SUM_OF_REVENUES - SUM_OF_EXPENSES;
+    cout<<"Balance of income and expenses is "<<finaleBalance<<" PLN"<<endl;
     system("pause");
 }
 void HomeBudget::displayFinancialBalanceSheetFromSelectedPeriodOfTime() {
     int signatureOfBeginningDay = 0, signatureOfEndDay = 0;
+
     do {
         system("cls");
         cout<<"Write date of beginning of the balance money sheet:\n";
@@ -133,7 +140,16 @@ void HomeBudget::displayFinancialBalanceSheetFromSelectedPeriodOfTime() {
             system("pause");
         }
     } while(signatureOfBeginningDay > signatureOfEndDay);
-    const float BALANCE_SHEET_AMOUNT = countFinancialBalanceSheetOfSelectedPeriod(signatureOfBeginningDay,signatureOfEndDay);
-    cout<<"Your money balance sheet is "<<BALANCE_SHEET_AMOUNT<<endl;
-    system("pause");
+
+    displayAllDetailsForFinancialBalanceSheetFromSelectedPeriodOfTime(signatureOfBeginningDay, signatureOfEndDay);
+}
+void HomeBudget::displayFinancialBalanceSheetFromCurrentMonth() {
+    int firstDayOfCurrentMonthSignature = getDateSignatureOfFirstDayOfCurrentMonth();
+    int lastDayOfCurrentMonthSignature = getDateSignatureOfLastDayOfCurrentMonth();
+    displayAllDetailsForFinancialBalanceSheetFromSelectedPeriodOfTime(firstDayOfCurrentMonthSignature, lastDayOfCurrentMonthSignature);
+}
+void HomeBudget::displayFinancialBalanceSheetFromLastMonth() {
+    int firstDayOfPreviousMonthSignature = getDateSignatureOfFirstDayOfPreviousMonth();
+    int lastDayOfPreviousMonthSignature = getDateSignatureOfLastDayOfPreviousMonth();
+    displayAllDetailsForFinancialBalanceSheetFromSelectedPeriodOfTime(firstDayOfPreviousMonthSignature, lastDayOfPreviousMonthSignature);
 }

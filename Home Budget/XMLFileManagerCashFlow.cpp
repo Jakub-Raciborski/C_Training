@@ -100,3 +100,41 @@ float XMLFileManagerCashFlow::countSumOfCashFlowsOfSelectedPeriod(const int FIRS
     }
     return sumOfCashFlow;
 }
+void XMLFileManagerCashFlow::displayCashFlowDetailsFromCurrentlySelectedXMLFileEntry() {
+    string finaleMessage = "", amount = "", description = "", dateNotation = "", dateSignature;
+
+    XMLFile.IntoElem();
+    XMLFile.FindElem("Amount");
+    amount = XMLFile.GetData();
+    XMLFile.ResetMainPos();
+
+
+    XMLFile.FindElem("Description");
+    description = XMLFile.GetData();
+    XMLFile.ResetMainPos();
+
+    XMLFile.FindElem("Date");
+    dateSignature = XMLFile.GetData();
+    Date date(VariableModification::convertStringToInt(dateSignature));
+    dateNotation = date.getDateNotation();
+    XMLFile.OutOfElem();
+
+    finaleMessage = dateNotation + " " + description + " " + amount + " PLN";
+    cout<<finaleMessage<<endl;
+}
+void XMLFileManagerCashFlow::displayAllCashFlowsDetailsFromSelectedPeriod(const int FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE, const int LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE) {
+    int checkingSignature = LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE;
+    Date checkingDate(LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE);
+    XMLFile.ResetMainPos();
+
+    while(checkingSignature >= FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE) {
+        string entryName = "Entry" + VariableModification::convertIntToString(checkingSignature);
+        if(XMLFile.FindElem(entryName))
+            displayCashFlowDetailsFromCurrentlySelectedXMLFileEntry();
+        else {
+            checkingDate.moveDateToPreviousDay();
+            checkingSignature = checkingDate.getDateSignature();
+            XMLFile.ResetMainPos();
+        }
+    }
+}

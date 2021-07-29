@@ -1,6 +1,7 @@
 #ifndef HOMEBUDGET_H
 #define HOMEBUDGET_H
 
+#include <vector>
 #include "UserManager.h"
 #include "InputStream.h"
 #include "XMLFileManagerCashFlow.h"
@@ -10,8 +11,10 @@ using namespace std;
 class HomeBudget{
     UserManager userManager;
     User loggedUser;
-    XMLFileManagerCashFlow Revenue;
-    XMLFileManagerCashFlow Expense;
+    XMLFileManagerCashFlow revenue;
+    XMLFileManagerCashFlow expense;
+    vector<CashFlow> revenues;
+    vector<CashFlow> expenses;
 
     void displayMainMenu();
     void displayUserMenu();
@@ -26,11 +29,15 @@ class HomeBudget{
     void displayFinancialBalanceSheetFromLastMonth();
     void displayFinancialBalanceSheetFromCurrentMonth();
     void displayFinancialBalanceSheetFromSelectedPeriodOfTime();
-    float countFinancialBalanceSheetOfSelectedPeriod(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE);
+    float countSumOfExpenses(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE);
+    float countSumOfRevenues(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE);
+    void displayListOfRevenues(const int FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE, const int LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE);
+    void displayListOfExpenses(const int FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE, const int LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE);
+    void displayAllDetailsForFinancialBalanceSheetFromSelectedPeriodOfTime(const int FIRST_DAY_SIGNATURE, const int LAST_DAY_SIGNATURE);
 
 public:
     HomeBudget()
-    :Revenue("C:\\HomeBudget\\Revenue.XML"), Expense("C:\\HomeBudget\\Expense.XML"){};
+    :revenue("C:\\HomeBudget\\Revenue.XML"), expense("C:\\HomeBudget\\Expense.XML"){};
 
     void startProgram();
 };

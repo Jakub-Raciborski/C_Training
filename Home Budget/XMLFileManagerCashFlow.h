@@ -16,6 +16,7 @@ class XMLFileManagerCashFlow: public XMLFileManager {
     void saveCashFlowInFile(CashFlow cashFlow);
     string loggedUser;
     float loadAmountFromCurrentlySelectedXMLFileEntry();
+    void displayCashFlowDetailsFromCurrentlySelectedXMLFileEntry();
 
 public:
     XMLFileManagerCashFlow(const char* PATH)
@@ -27,5 +28,6 @@ public:
     void logOutUser();
     void addCashFlow();
     float countSumOfCashFlowsOfSelectedPeriod(const int FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE, const int LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE);
+    void displayAllCashFlowsDetailsFromSelectedPeriod(const int FIRST_DAY_OF_SELECTED_PERIOD_SIGNATURE, const int LAST_DAY_OF_SELECTED_PERIOD_SIGNATURE);
 };
 #endif // XMLFILEMANAGERCASHFLOW_H
