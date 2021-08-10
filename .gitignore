@@ -7,4 +7,5 @@ Plan/
 *.swp
 *.mm
 *.ux
+*.~*
 ksiazka-strukturalnie.cpp
